@@ -1,0 +1,24 @@
+[project]
+name = "customer-support-system"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+
+    "numpy",
+    "pandas",
+    "scikit-learn==1.6.1",
+    "joblib==1.4.2",
+    "pika==1.3.2",
+    "tensorflow==2.14.0",
+    "keras==2.14.0",
+    "tensorflow-metal==1.1.0",
+    "transformers==4.49.0"
+
+
+
+
+
+
+]
