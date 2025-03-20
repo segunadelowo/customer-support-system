@@ -11,3 +11,8 @@ nltk
 chromadb
 sentence-transformers
 anthropic
+pytest-asyncio
+pytest-cov
+httpx
+pytest
+pytest-mock

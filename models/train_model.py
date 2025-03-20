@@ -6,7 +6,7 @@ from models.intent_classification_model import IntentClassificationModel
 def main():
 
     
-    filepath_data = '/Users/segunadelowo/projects/customer-support-system/data/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv'
+    filepath_data = '/data/bitext.csv'
     
 
     texts = [

@@ -20,3 +20,7 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+asyncio_mode = "auto"
+
+[tool.pytest]
+addopts = "-v --cov=prediction_api -v --cov=processor"

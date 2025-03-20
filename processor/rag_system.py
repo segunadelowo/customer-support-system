@@ -107,12 +107,12 @@ class RAGSystem:
         self.populate_knowledge_base()
     
 # Example usage
-if __name__ == "__main__":
-    # Initialize the RAG system
-    rag_system = RAGSystem()
-    rag_system.setup()
+# if __name__ == "__main__":
+#     # Initialize the RAG system
+#     rag_system = RAGSystem()
+#     rag_system.setup()
 
-    # Process a sample ticket
-    ticket = "I want to subscribe to your newsletter."
-    result = rag_system.process_ticket(ticket)
-    print(f"Recommendation: {result['recommendation']}")
+#     # Process a sample ticket
+#     ticket = "I want to subscribe to your newsletter."
+#     result = rag_system.process_ticket(ticket)
+#     print(f"Recommendation: {result['recommendation']}")
