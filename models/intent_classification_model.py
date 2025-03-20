@@ -135,6 +135,8 @@ class IntentClassificationModel:
         return y_train, y_val, y_test
 
     def create_text_classifier(self, num_classes):
+        """
+        Create a text classification model using Keras Sequential API."""
         model = tf.keras.Sequential([
             tf.keras.layers.Embedding(input_dim=self.vocab_size, output_dim=self.embedding_dim, input_length=self.max_length),
             tf.keras.layers.GlobalAveragePooling1D(),
@@ -145,6 +147,19 @@ class IntentClassificationModel:
         return model
 
     def compile_and_train_model(self, X_train, y_train, X_val, y_val, epochs=20, batch_size=64):
+        """
+        Compiles and trains the intent classification model.
+        Args:
+            X_train (numpy.ndarray): Training data features.
+            y_train (numpy.ndarray): Training data labels.
+            X_val (numpy.ndarray): Validation data features.
+            y_val (numpy.ndarray): Validation data labels.
+            epochs (int, optional): Number of epochs to train the model. Defaults to 20.
+            batch_size (int, optional): Batch size for training. Defaults to 64.
+        Returns:
+            history (tf.keras.callbacks.History): A record of training loss values and metrics values at successive epochs.
+        """
+
         self.model.compile(
             optimizer='adam',
             loss='categorical_crossentropy',
@@ -181,12 +196,31 @@ class IntentClassificationModel:
         return history
 
     def evaluate_model(self, X_test, y_test):
+        """
+        Evaluate the performance of the model on the test dataset.
+        Args:
+            X_test (array-like): Test features.
+            y_test (array-like): Test labels.
+        Returns:
+            dict: A dictionary containing the evaluation metrics with keys as metric names 
+                  ("loss", "accuracy", "precision", "recall", "auc") and values as the corresponding metric values.
+        """
+        
         metrics = self.model.evaluate(X_test, y_test, verbose=0)
         metric_names = ["loss", "accuracy", "precision", "recall", "auc"]
         metrics_dict = {name: value for name, value in zip(metric_names, metrics)}
         return metrics_dict
 
     def _save_artifacts(self, filepath):
+        """
+        Save the model artifacts to the specified directory.
+        This method saves the label encoder and tokenizer used by the model
+        to the given directory. If the directory does not exist, it will be created.
+        Args:
+            filepath (str): The path to the directory where the artifacts will be saved.
+        Raises:
+            OSError: If the directory cannot be created.
+        """
         
         # Create directory if it doesn't exist
         os.makedirs(filepath, exist_ok=True)
