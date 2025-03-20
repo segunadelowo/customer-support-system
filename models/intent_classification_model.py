@@ -16,7 +16,24 @@ mlflow.set_experiment('intent_classification')
 mlflow.tensorflow.autolog()
 
 class IntentClassificationModel:
-    def __init__(self, vocab_size=1000, embedding_dim=16, max_length=10,filepath=None):
+    """
+    Class for performing intent classification using a neural network.
+
+    This class provides methods to load and preprocess textual data, encode labels,
+    tokenize texts, split data into training, validation, and testing sets, as well as
+    to create, compile, train, and evaluate a TensorFlow model. It also includes utilities
+    for saving artifacts and making predictions on new samples.
+    """
+    def __init__(self, vocab_size=1000, embedding_dim=16, max_length=10, filepath=None):
+        """
+        Initialize the Intent Classification Model.
+
+        Args:
+            vocab_size (int): Maximum number of words to keep in the vocabulary
+            embedding_dim (int): Dimension of the embedding layer
+            max_length (int): Maximum length of input sequences
+            filepath (str): Path to save model artifacts
+        """
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.max_length = max_length
@@ -24,9 +41,17 @@ class IntentClassificationModel:
         self.label_encoder = LabelEncoder()
         self.model = None
         self.filepath = filepath
-       
 
     def load_and_prepare_data(self, filepath):
+        """
+        Load and prepare data from CSV file.
+
+        Args:
+            filepath (str): Path to the CSV file containing training data
+
+        Returns:
+            tuple: (texts, labels) containing instructions and their corresponding intents
+        """
         train_data = pd.read_csv(filepath)
         train_data = train_data[['instruction', 'category', 'intent', 'response']]
         labels = train_data['intent']
@@ -34,22 +59,76 @@ class IntentClassificationModel:
         return texts, labels
 
     def encode_labels(self, labels):
+        """
+        Encode categorical labels into numerical format.
+
+        Args:
+            labels (pd.Series): Series containing intent labels
+
+        Returns:
+            tuple: (encoded_labels, num_classes) containing numerical labels and total number of classes
+        """
         encoded_labels = np.array(self.label_encoder.fit_transform(labels))
         num_classes = len(self.label_encoder.classes_)
         return encoded_labels, num_classes
 
     def tokenize_texts(self, texts):
+        """
+        Convert text data into sequences of tokens and pad them.
+
+        Args:
+            texts (pd.Series): Series containing text instructions
+
+        Returns:
+            np.ndarray: Padded sequences of tokenized texts
+        """
         self.tokenizer.fit_on_texts(texts)
         sequences = self.tokenizer.texts_to_sequences(texts)
-        padded_sequences = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=self.max_length, padding='post')
+        padded_sequences = tf.keras.preprocessing.sequence.pad_sequences(
+            sequences, 
+            maxlen=self.max_length, 
+            padding='post'
+        )
         return padded_sequences
 
     def split_data(self, padded_sequences, encoded_labels):
-        X_temp, X_test, y_temp, y_test = train_test_split(padded_sequences, encoded_labels, test_size=0.2, random_state=42)
-        X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25, random_state=42)
+        """
+        Split data into training, validation, and test sets.
+
+        Args:
+            padded_sequences (np.ndarray): Preprocessed input sequences
+            encoded_labels (np.ndarray): Encoded intent labels
+
+        Returns:
+            tuple: (X_train, X_val, X_test, y_train, y_val, y_test)
+        """
+        X_temp, X_test, y_temp, y_test = train_test_split(
+            padded_sequences, 
+            encoded_labels, 
+            test_size=0.2, 
+            random_state=42
+        )
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_temp, 
+            y_temp, 
+            test_size=0.25, 
+            random_state=42
+        )
         return X_train, X_val, X_test, y_train, y_val, y_test
 
     def one_hot_encode_labels(self, y_train, y_val, y_test, num_classes):
+        """
+        Convert label arrays into one-hot encoded format.
+
+        Args:
+            y_train (np.ndarray): Training labels
+            y_val (np.ndarray): Validation labels
+            y_test (np.ndarray): Test labels
+            num_classes (int): Total number of unique classes
+
+        Returns:
+            tuple: (y_train, y_val, y_test) with one-hot encoded labels
+        """
         y_train = to_categorical(y_train, num_classes)
         y_val = to_categorical(y_val, num_classes)
         y_test = to_categorical(y_test, num_classes)
